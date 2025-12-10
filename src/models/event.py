@@ -14,8 +14,10 @@ class Events(db.Model):
     start_date = db.Column(db.DateTime(), nullable=True)
     end_date = db.Column(db.DateTime(), nullable=True)
     notes = db.Column(db.String(), nullable=True)
-    date_created = db.Column(db.DateTime())
+    date_created = db.Column(db.DateTime(), default=db.func.current_timestamp())
     date_updated = db.Column(db.DateTime(), nullable=True)
+
+    wishlists = db.relationship('Wishlists', back_populates='event')
 
     def __init__(self, name, event_type, location, start_date, end_date, notes, date_created, date_updated):
         self.name = name
@@ -27,7 +29,10 @@ class Events(db.Model):
         self.date_created = date_created
         self.date_updated = date_updated
 
-class EventSchema(ms.Schema):
+    def new_event_obj():
+        return Events('', '', '', None, None, '', db.func.current_timestamp(), None)
+
+class EventSchema(ma.Schema):
     class Meta:
         fields = ['event_id', 'name', 'event_type', 'location', 'start_date', 'end_date', 'notes', 'date_created', 'date_updated']
 
@@ -38,7 +43,8 @@ class EventSchema(ms.Schema):
     start_date = ma.fields.DateTime(allow_none=True)
     end_date = ma.fields.DateTime(allow_none=True)
     notes = ma.fields.String(allow_none=True)
-    date_created = ma.fields.DateTime(required=True)
+    date_created = ma.fields.DateTime(required=True, dump_default=db.func.current_timestamp())
     date_updated = ma.fields.DateTime(allow_none=True)
 
 event_schema = EventSchema()
+events_schema = EventSchema(many=True)
