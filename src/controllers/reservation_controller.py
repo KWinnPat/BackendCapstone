@@ -30,7 +30,7 @@ def create_user_reservation():
     user = post_data.get('user_id')
     reservation_id = post_data.get('reservation_id')
 
-    user = db.session.query(Users).filter(Users.user_id == user_id).first()
+    user = db.session.query(Users).filter(Users.user_id == user).first()
     reservation = db.session.query(Reservations).filter(Reservations.reservation_id == reservation_id).first()
     if not user or not reservation:
         return jsonify({"message": "user or reservation not found"}), 404
